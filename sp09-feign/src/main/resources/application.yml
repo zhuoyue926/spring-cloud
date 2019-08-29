@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: feign
+    
+server:
+  port: 3001
+  
+eureka:
+  client:
+  #Eureka服务注册中心也会将自己作为客户端来尝试注册它自己，所以我们需要禁用它的客户端注册行为。
+    #registerWithEureka: false   
+    #fetchRegistry: false
+    service-url:
+      defaultZone: http://eureka1:2001/eureka, http://eureka2:2002/eureka
+      
+ #     feign + ribbon 负载均衡和重试
+ribbon:
+  ConnectTimeout: 1000
+  ReadTimeout: 1000
+  
+item-service:
+  ribbon:
+    ConnectTimeout: 500
+    ReadTimeout: 1000
+    MaxAutoRetriesNextServer: 2
+    MaxAutoRetries: 1
+# feign 启用 hystrix   
+feign:
+  hystrix:
+    enabled: true
+#可以添加配置，暂时减小降级超时时间，以便后续对降级进行测试
+
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 500
+ #暴露 hystrix.stream 端点            
+management:
+  endpoints:
+    web:
+      exposure:
+        include: hystrix.stream
